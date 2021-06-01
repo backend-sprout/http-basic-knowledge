@@ -64,7 +64,41 @@ URL의 기본 포멧팅은 아래와 같다.
     * `?`로 시작하며, `&`로 추가한다.   
     * query parameter, query string 등으로 불린다.   
     * 웹서버에 제공하는 파라미터, 문자 형태이다.   
-*     
-
-
+* `[#fragment]` : 생략되어있다.  
+    * fragment
+    * html 내부 북마크등에 사용된다.   
+    * 서버에 전송하는 정보가 아니다!   
+   
 # 웹 브라우저 요청 흐름  
+`https://www.google.com/search?q=hello&hl=ko`     
+위와 같은 URL을 사용한다고 가정을 하자  
+    
+1. DNS를 통해 IP를 찾고, schema를 통해 포트를 얻는다.     
+2. 위 정보들을 토대로 `HTTP Request Message` 를 생성한다.   
+
+**HTTP Request Message**
+```
+GET /search?q=hello&hl=ko HTTP/1.1
+Host:www.google.com
+```
+
+3. IP 와 PORT 번호를 통해, `www.google.com`과 `http 3 way handshake`를 동작하여 연결한다.  
+4. 이후, Sokcet 라이브러리를 통해 Application 계층에서 전송 계층으로 내려온다. 
+5. TCP/IP 패킷을 생성하고, HTTP 메시지를 포함한다.   
+6. 이후 걔층을 내려오면서 계층에서 수행하는 작업을 거치고 전선을 통해 데이터가 보내진다.   
+    * 데이터는 `HTTP 메시지(실제 데이터)`를 감싼 `TCP/IP 패킷` 형태이다.      
+7. 서버에서는 계층을 올라오면서 분리를 진행하고 결과적으로 `HTTP 메시지(실제 데이터)`를 얻는다.  
+8. 서버는 `HTTP 메시지(실제 데이터)`를 분석하고 해당 데이터에 맞는 `HTTP Response Message`를 보낸다.  
+
+**HTTP Response Message**
+```
+HTTP/1.1 200 OK
+Content-Type:text/html;charset=UTF-8
+Content-Length:3423
+
+<html>
+    <body></body>
+</html>    
+```
+
+
